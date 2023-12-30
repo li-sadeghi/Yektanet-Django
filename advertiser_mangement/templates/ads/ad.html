@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+    {% for advertiser in advertisers %}
+        <div class="card mt-2 p-2">
+            <h5 class="card-title">{{ advertiser.name }}</h5>
+            <div class="card-body">
+                <div class="row">
+            {% for ad in advertiser.ad_set.all %}
+                <div class="card col-md-2 p-0 mx-2">
+                    <a href="/click/{{ ad.id }}/">
+                        <img src="{{ ad.imgUrl }}"
+                            class="card-img-top">
+                        <div class="card-body">
+                            <span>{{ ad.title }}</span>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock content %}
