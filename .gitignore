@@ -1,2 +1,2 @@
 venv/
-*.pyc
+advertiser_mangement/__pycache__/
