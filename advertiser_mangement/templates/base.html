@@ -28,7 +28,9 @@
             <div class="collapse navbar-collapse" id="navbarToggle">
               <div class="navbar-nav mr-auto">
                 <a class="nav-item nav-link" href="{% url 'yektanet-home' %}">Home</a>
+                {% block navbar_ads %}
                 <a class="nav-item nav-link" href="{% url 'yektanet-ads' %}">Ads</a>
+                {% endblock %}
               </div>
               <!-- Navbar Right Side -->
               <div class="navbar-nav">

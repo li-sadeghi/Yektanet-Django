@@ -20,4 +20,7 @@
             </div>
         </div>
     {% endfor %}
+    {% block navbar_ads %}
+    <a class="nav-item nav-link" href="{% url 'create-ad' %}">Create Ad</a>
+    {% endblock %}
 {% endblock content %}
