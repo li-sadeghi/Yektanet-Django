@@ -17,10 +17,9 @@ def ads(request):
     return render(request, 'ads/ad.html', context)
 
 def update_view_ads(request):
-    for ad in Ad.objects.all():
+    for ad in Ad.objects.filter(approve=True):
         new_view = View(ad=ad, viewer_ip=request.user_ip)
         new_view.save()
-
 
 
 def click(request, ad_id):
@@ -70,7 +69,7 @@ def get_form_data(request):
 def ads_information(request):
     ad_stats = (
         Ad.objects.annotate(
-            click_count=Count('click'),
+            click_count=Count('click', distinct=True),
             view_count=Count('view', distinct=True),
         )
         .values('id', 'title', 'click_count', 'view_count')
@@ -78,6 +77,10 @@ def ads_information(request):
     )
 
     for ad_stat in ad_stats:
+        click_count = ad_stat.get('click_count')
+        view_count = ad_stat.get('view_count')
+        rate = 0 if view_count == 0 else click_count/view_count
+        ad_stat['click_rate'] = round(rate, 2)
         ad_stat['avg_time_diff'] = calculate_avg_time_diff(ad_stat['id'])
 
     context = {
@@ -86,18 +89,23 @@ def ads_information(request):
     return render(request, 'ads/information.html', context)
 
 def calculate_avg_time_diff(ad_id):
-    ad = Ad.objects.get(id=ad_id)
-    views = View.objects.filter(ad=ad).order_by('time')
-    clicks = Click.objects.filter(ad=ad).order_by('time_clicked')
-
+    all_views = View.objects.filter(ad_id=ad_id)
+    all_clicks = Click.objects.filter(ad_id=ad_id)
+    all_ip_addresses = View.objects.values('viewer_ip').distinct()
+    # print(all_clicks)
+    # print(all_views)
     total_diff = 0
     count = 0
 
-    for view, click in zip(views, clicks):
-        total_diff += (view.time - click.time_clicked).total_seconds()
-        count += 1
+    for ip in all_ip_addresses:
+        ip = ip['viewer_ip']
+        view_time = all_views.filter(viewer_ip=ip).order_by('time')
+        click_time = all_clicks.filter(clicker_ip=ip).order_by('time_clicked')
+        if view_time and click_time:
+            total_diff += (view_time.last().time - click_time.last().time_clicked).total_seconds()
+            count += 1
 
     if count == 0:
         return 0
 
-    return total_diff / count
+    return round(total_diff / count, 2)

@@ -6,6 +6,7 @@
             <th>Title</th>
             <th>Click Count</th>
             <th>View Count</th>
+            <th>Click Rate</th>
             <th>Avg Time Difference</th>
         </tr>
         {% for ad_stat in ad_stats %}
@@ -14,6 +15,7 @@
                 <td>{{ ad_stat.title }}</td>
                 <td>{{ ad_stat.click_count }}</td>
                 <td>{{ ad_stat.view_count }}</td>
+                <td>{{ ad_stat.click_rate }}</td>
                 <td>{{ ad_stat.avg_time_diff }}</td>
             </tr>
         {% endfor %}

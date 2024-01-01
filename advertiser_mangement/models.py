@@ -31,8 +31,8 @@ class View(models.Model):
 
 class Click(models.Model):
     ad = models.ForeignKey(Ad, on_delete=models.CASCADE)
-    clicker_ip = models.GenericIPAddressField()
     time_clicked = models.DateTimeField(default=timezone.now)
+    clicker_ip = models.GenericIPAddressField()
 
     def __str__(self):
         return f'clicked on {self.ad.title}'
