@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+    <table border="1">
+        <tr>
+            <th>Ad_ID</th>
+            <th>Title</th>
+            <th>Click Count</th>
+            <th>View Count</th>
+            <th>Avg Time Difference</th>
+        </tr>
+        {% for ad_stat in ad_stats %}
+            <tr>
+                <td>{{ ad_stat.id }}</td>
+                <td>{{ ad_stat.title }}</td>
+                <td>{{ ad_stat.click_count }}</td>
+                <td>{{ ad_stat.view_count }}</td>
+                <td>{{ ad_stat.avg_time_diff }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}

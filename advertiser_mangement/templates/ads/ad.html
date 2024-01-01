@@ -5,17 +5,18 @@
             <h5 class="card-title">{{ advertiser.name }}</h5>
             <div class="card-body">
                 <div class="row">
-            {% for ad in advertiser.ad_set.all %}
-                <div class="card col-md-2 p-0 mx-2">
-                    <a href="/click/{{ ad.id }}/">
-                        <img src="{{ ad.imgUrl }}"
-                            class="card-img-top">
-                        <div class="card-body">
-                            <span>{{ ad.title }}</span>
-                        </div>
-                    </a>
-                </div>
-            {% endfor %}
+                    {% for ad in advertiser.ad_set.all %}
+                        {% if ad.approve %}
+                            <div class="card col-md-2 p-0 mx-2">
+                                <a href="/click/{{ ad.id }}/">
+                                    <img src="{{ ad.imgUrl }}" class="card-img-top">
+                                    <div class="card-body">
+                                        <span>{{ ad.title }}</span>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
             </div>
         </div>

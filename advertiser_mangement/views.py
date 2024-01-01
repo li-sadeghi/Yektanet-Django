@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Advertiser, Ad
+from .models import Advertiser, Ad, Click, View
 from .forms import InputForm
 from django.contrib import messages
+from django.db.models import Count, Avg
 
 
 
@@ -14,11 +15,12 @@ def ads(request):
     }
     return render(request, 'ads/ad.html', context)
 
+
 def click(request, ad_id):
     ad = get_object_or_404(Ad, pk=ad_id)
     try:
-        ad.click += 1
-        ad.save()
+        click_event = Click(ad=ad, clicker_ip=request.META)
+        click_event.save()
         return redirect(ad.link)
     except (KeyError, Ad.DoesNotExist):
         return render(request, 
@@ -55,5 +57,38 @@ def get_form_data(request):
     new_ad.imgUrl = image
     new_ad.title = title
     new_ad.link = link
-    new_ad.views, new_ad.click = 0, 0
     return advertiser, new_ad
+def ads_information(request):
+    ad_stats = (
+        Ad.objects.annotate(
+            click_count=Count('click'),
+            view_count=Count('view', distinct=True),
+        )
+        .values('id', 'title', 'click_count', 'view_count')
+        .order_by('-view_count')
+    )
+
+    for ad_stat in ad_stats:
+        ad_stat['avg_time_diff'] = calculate_avg_time_diff(ad_stat['id'])
+
+    context = {
+        'ad_stats': ad_stats,
+    }
+    return render(request, 'ads/information.html', context)
+
+def calculate_avg_time_diff(ad_id):
+    ad = Ad.objects.get(id=ad_id)
+    views = View.objects.filter(ad=ad).order_by('time')
+    clicks = Click.objects.filter(ad=ad).order_by('time_clicked')
+
+    total_diff = 0
+    count = 0
+
+    for view, click in zip(views, clicks):
+        total_diff += (view.time - click.time_clicked).total_seconds()
+        count += 1
+
+    if count == 0:
+        return 0
+
+    return total_diff / count
