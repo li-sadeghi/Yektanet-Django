@@ -10,16 +10,23 @@ def home(request):
     return render(request, "blog/home.html")
 
 def ads(request):
+    update_view_ads(request)
     context = {
         'advertisers':Advertiser.objects.all()
     }
     return render(request, 'ads/ad.html', context)
 
+def update_view_ads(request):
+    for ad in Ad.objects.all():
+        new_view = View(ad=ad, viewer_ip=request.user_ip)
+        new_view.save()
+
+
 
 def click(request, ad_id):
     ad = get_object_or_404(Ad, pk=ad_id)
     try:
-        click_event = Click(ad=ad, clicker_ip=request.META)
+        click_event = Click(ad=ad, clicker_ip=request.user_ip)
         click_event.save()
         return redirect(ad.link)
     except (KeyError, Ad.DoesNotExist):
@@ -58,6 +65,8 @@ def get_form_data(request):
     new_ad.title = title
     new_ad.link = link
     return advertiser, new_ad
+
+
 def ads_information(request):
     ad_stats = (
         Ad.objects.annotate(
