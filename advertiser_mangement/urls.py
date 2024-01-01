@@ -1,10 +1,12 @@
 from django.urls import path
+from .views import *
 from . import views
 
+
 urlpatterns = [
-    path("", views.home, name='yektanet-home'),
-    path("ads/", views.ads, name='yektanet-ads'),
-    path("click/<int:ad_id>/", views.click, name='click'),
-    path("ads/create/", views.create_ad, name='create-ad'),
-    path("information/", views.ads_information, name='ad-information'),
+    path("", HomePageView.as_view(), name='yektanet-home'),
+    path("ads/", ShowAdsView.as_view(), name='yektanet-ads'),
+    path("click/<int:ad_id>/", ClickView.as_view(), name='click'),
+    path("ads/create/", AdCreateView.as_view(), name='create-ad'),
+    path("information/", AdsInformationView.as_view(), name='ad-information'),
 ]
