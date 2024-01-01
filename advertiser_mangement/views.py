@@ -32,6 +32,7 @@ def click(request, ad_id):
 def create_ad(request):
     if request.method == 'POST':
         form = InputForm()
+        print(form.is_valid())
         if True:
             user, ad = get_form_data(request)
             ad.save()
