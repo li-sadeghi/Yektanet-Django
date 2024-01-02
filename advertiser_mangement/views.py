@@ -60,7 +60,7 @@ class AdCreateView(TemplateView):
     def post(self, request, *args, **kwargs):
         form = InputForm(request.POST)
         if form.is_valid():
-            user, ad = get_form_data(request)
+            user, ad = self.get_form_data(request)
             ad.save()
             name = user.name
             messages.success(request, f'Ad Created Successfully For {name}!')
