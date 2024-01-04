@@ -19,14 +19,12 @@ class ShowAdsView(TemplateView):
     template_name = 'ads/ad.html'
 
     def get_context_data(self, **kwargs: Any):
+        for ad in Ad.objects.filter(approve=True):
+            new_view = View(ad=ad, viewer_ip=self.request.user_ip)
+            new_view.save()
         context = super().get_context_data(**kwargs)
         context['advertisers'] = Advertiser.objects.all()
         return context
-
-    def update_view_ads(request):
-        for ad in Ad.objects.filter(approve=True):
-            new_view = View(ad=ad, viewer_ip=request.user_ip)
-            new_view.save()
 
 
 class ClickView(TemplateView):
@@ -68,7 +66,7 @@ class AdCreateView(TemplateView):
 
         return self.render_to_response(self.get_context_data())
 
-    def get_form_data(request):
+    def get_form_data(self, request):
         advertiser_id = int(request.POST.get('advertiser_id'))
         advertiser = Advertiser.objects.get(id=advertiser_id)
         image = request.POST.get('image')
