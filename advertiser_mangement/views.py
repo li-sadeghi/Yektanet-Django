@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Advertiser, Ad, Click, View
 from .forms import InputForm
 from django.contrib import messages
-from django.db.models import Count, Avg
+from django.db.models import Count
 from django.views.generic import TemplateView
 
 
@@ -18,8 +18,9 @@ class HomePageView(TemplateView):
 class ShowAdsView(TemplateView):
     template_name = 'ads/ad.html'
 
-    def get_context_data(self, **kwargs: Any):
-        for ad in Ad.objects.filter(approve=True):
+    def get_context_data(self, **kwargs):
+        ads_approved = Ad.objects.filter(approve=True)
+        for ad in ads_approved:
             new_view = View(ad=ad, viewer_ip=self.request.user_ip)
             new_view.save()
         context = super().get_context_data(**kwargs)
@@ -72,11 +73,10 @@ class AdCreateView(TemplateView):
         image = request.POST.get('image')
         title = request.POST.get('title')
         link = request.POST.get('url')
-        new_ad = Ad()
-        new_ad.advertiser = advertiser
-        new_ad.imgUrl = image
-        new_ad.title = title
-        new_ad.link = link
+        new_ad = Ad(advertiser=advertiser,
+                    imgUrl=image,
+                    title=title,
+                    link=link)
         return advertiser, new_ad
 
 
@@ -127,3 +127,10 @@ class AdsInformationView(TemplateView):
             return 0
 
         return round(total_diff / count, 2)
+
+
+home_view = HomePageView.as_view()
+show_ads_view = ShowAdsView.as_view()
+click_view = ClickView.as_view()
+create_ad_view = AdCreateView.as_view()
+ads_information_view = AdsInformationView.as_view()

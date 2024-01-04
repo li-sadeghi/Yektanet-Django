@@ -76,13 +76,12 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-    ]
-}
-
-REST_FRAMEWORK = {
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10
 }
+
+BROKER_URL = 'pyamqp://guest:guest@localhost:5672//'
 
 WSGI_APPLICATION = 'Yektanet.wsgi.application'
 
