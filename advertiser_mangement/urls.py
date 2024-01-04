@@ -4,13 +4,11 @@ from .views import *
 
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
-router.register(r'ads-information',
-                ShowAdsInformationViewSet)
-router.register(r'show-ads', ShowAdsViewSet)
+router.register(r'ads-information', ShowAdsInformationViewSet)
+router.register(r'ads-show', ShowAdsViewSet)
 
 urlpatterns = [
-    path('advertiser-management/', include(router.urls)),
-    path("advertiser-management/ads/click/<int:id>/",
-         click_generic_viewset, name='click-ad'),
-    path("advertiser-management/ads/create/", create_ad_viewset)
+    path('', include(router.urls)),
+    path("ads/click/<int:id>/", click_generic_viewset, name='click-ad'),
+    path("ads/create/", create_ad_viewset)
 ]
