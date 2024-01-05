@@ -4,6 +4,7 @@ from .models import Advertiser, Ad, Click, View
 from .forms import InputForm
 from django.contrib import messages
 from django.db.models import Count, ExpressionWrapper, F, fields, Sum, Q
+from django.db.models.functions import Round
 from django.views.generic import TemplateView, RedirectView
 
 
@@ -91,14 +92,14 @@ class AdsInformationView(TemplateView):
                     F('total_diff') / F('view_count'),
                     output_field=fields.DurationField(),
                 ),
-                click_rate=ExpressionWrapper(F('click_count') / F('view_count'),
-                                             output_field=fields.DecimalField(),
-                                             )
+                click_rate=ExpressionWrapper(0 if F('view_count') == 0 else Round(F('click_count')*1.00 / (F('view_count')), 2),
+                                             output_field=fields.DecimalField(
+                    decimal_places=2),
+                )
             )
             .values('id', 'title', 'click_count', 'view_count', 'click_rate', 'avg_time_diff')
             .order_by('-view_count')
         )
-
         context = {
             'ad_stats': ad_stats,
         }
