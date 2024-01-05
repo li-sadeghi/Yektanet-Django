@@ -5,5 +5,5 @@ from advertiser_mangement.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('Yektanet/', include('advertiser_mangement.urls_api')),
+    path('Yektanet/', include('advertiser_mangement.urls')),
 ]
