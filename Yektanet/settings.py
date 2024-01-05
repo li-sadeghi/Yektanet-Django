@@ -81,7 +81,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
-BROKER_URL = 'pyamqp://guest:guest@localhost:5672//'
+
+CELERY_BROKER_URL = 'amqp://localhost'
 
 WSGI_APPLICATION = 'Yektanet.wsgi.application'
 
