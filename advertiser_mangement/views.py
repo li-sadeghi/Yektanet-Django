@@ -2,21 +2,21 @@ from django.shortcuts import render, redirect, get_object_or_404
 from advertiser_mangement.models import Advertiser, Ad, Click, View
 from django.contrib.auth.models import User
 from .serializers import *
-from rest_framework import viewsets
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.generics import RetrieveAPIView, CreateAPIView
 from rest_framework.response import Response
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
     authentication_classes = [BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
 
-class ShowAdsViewSet(viewsets.ReadOnlyModelViewSet):
+class ShowAdsViewSet(ReadOnlyModelViewSet):
     queryset = Advertiser.objects.all().order_by('-id')
     serializer_class = AdvertiserSerializer
     permission_classes = [AllowAny]
@@ -48,7 +48,7 @@ class AdCreateAPIView(CreateAPIView):
     serializer_class = AdSerializer
 
 
-class ShowAdsInformationViewSet(viewsets.ReadOnlyModelViewSet):
+class ShowAdsInformationViewSet(ReadOnlyModelViewSet):
     queryset = Ad.objects.all().order_by('-id')
     serializer_class = AdSerializer
     permission_classes = [AllowAny]

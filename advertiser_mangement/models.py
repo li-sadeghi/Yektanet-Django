@@ -1,9 +1,11 @@
 from django.db import models
 from django.utils import timezone
+from .statics import default_credit, one_click_cost, thousand_view_cost
 
 
 class Advertiser(models.Model):
     id = models.IntegerField(primary_key=True)
+    account_credit = models.IntegerField(default=default_credit)
     clicks = models.IntegerField()
     views = models.IntegerField()
     name = models.CharField(max_length=20)
@@ -15,6 +17,8 @@ class Advertiser(models.Model):
 class Ad(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=20)
+    one_click_cost = models.IntegerField(default=one_click_cost)
+    thousand_view_cost = models.IntegerField(default=thousand_view_cost)
     imgUrl = models.CharField(max_length=255)
     link = models.CharField(max_length=255)
     approve = models.BooleanField(default=False)
@@ -46,12 +50,14 @@ class Ad(models.Model):
 
     @property
     def click_rate(self):
-        rate = 0 if self.view_count() == 0 else self.click_count()/self.view_count()
+        click_count = self.click_count()
+        view_count = self.view_count()
+        rate = 0 if view_count == 0 else click_count/view_count
         return round(rate, 2)
 
     @property
     def click_count(self):
-        click_count = View.objects.filter(ad_id=self.id).count
+        click_count = Click.objects.filter(ad_id=self.id).count
         return click_count
 
     @property
