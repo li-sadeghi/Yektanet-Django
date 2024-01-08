@@ -10,5 +10,7 @@ router.register(r'ads-show', ShowAdsViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path("ads/click/<int:id>/", click_generic_viewset, name='click-ad'),
-    path("ads/create/", create_ad_viewset)
+    path("ads/create/", create_ad_viewset),
+    path("advertiser/<int:id>/update-credit",
+         update_advertiser_credit_view, name='update-credit')
 ]

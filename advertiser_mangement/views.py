@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 from .serializers import *
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.generics import RetrieveAPIView, CreateAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated, DjangoModelPermissions
+from rest_framework.generics import RetrieveAPIView, CreateAPIView, UpdateAPIView
 from rest_framework.response import Response
 
 
@@ -54,5 +54,14 @@ class ShowAdsInformationViewSet(ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
 
 
+class AdvertiserUpdateView(UpdateAPIView):
+    queryset = Advertiser.objects.all().order_by('-id')
+    serializer_class = AdvertiserCreditSerializer
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    lookup_field = 'id'
+
+
 click_generic_viewset = ClickGenericView.as_view()
 create_ad_viewset = AdCreateAPIView.as_view()
+update_advertiser_credit_view = AdvertiserUpdateView.as_view()

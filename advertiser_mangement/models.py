@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from .statics import default_credit, one_click_cost, thousand_view_cost
+from .statics import default_credit, one_click_cost, thousand_view_cost, TYPE_CHOICES
 
 
 class Advertiser(models.Model):
@@ -82,3 +82,10 @@ class Click(models.Model):
 
     def __str__(self):
         return f'clicked on {self.ad.title}'
+
+
+class Transaction(models.Model):
+    ad = models.ForeignKey(Ad, on_delete=models.CASCADE)
+    time = models.DateTimeField(default=timezone.now)
+    type = models.CharField(max_length=5, choices=TYPE_CHOICES)
+    cost = models.IntegerField()
