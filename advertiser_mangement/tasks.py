@@ -3,19 +3,10 @@ from celery import shared_task, Celery
 from celery.schedules import crontab
 from django.utils import timezone
 from .models import Click, View, Ad
+from Yektanet.celery import app
 
-app = Celery()
+
 data_hourly = {}
-
-
-@app.on_after_configure.connect
-def setup_periodic_tasks(sender, **kwargs):
-    sender.add_periodic_task(
-        crontab(hour=0, minute=0), daily_reset.s(), name='daily reset')
-    sender.add_periodic_task(
-        crontab(minute=0), hourly_report.s(), name='hourly report')
-    sender.add_periodic_task(
-        crontab(minute=0, hour=0), daily_report.s(), name='daily report')
 
 
 @app.task
@@ -55,3 +46,11 @@ def daily_report():
         status += f"The ad {ad.title} had {clicks} clicks and {views} views in the last day.\n"
 
     return status
+
+
+app.add_periodic_task(
+    crontab(hour=0, minute=0), daily_reset.s(), name='daily reset')
+app.add_periodic_task(
+    crontab(minute=0), hourly_report.s(), name='hourly report')
+app.add_periodic_task(
+    crontab(minute=0, hour=0), daily_report.s(), name='daily report')
