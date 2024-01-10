@@ -84,6 +84,11 @@ REST_FRAMEWORK = {
 
 CELERY_BROKER_URL = 'pyamqp://guest:guest@localhost:5673//'
 
+KAFKA_BOOTSTRAP_SERVERS = 'localhost:29092'
+KAFKA_GROUP_ID = 'your_group_id'
+KAFKA_AUTO_OFFSET_RESET = 'earliest'
+KAFKA_TOPIC = 'newtopic'
+
 WSGI_APPLICATION = 'Yektanet.wsgi.application'
 
 

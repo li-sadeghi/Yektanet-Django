@@ -9,3 +9,7 @@ TYPE_CHOICES = [
     (CLICK, 'Click'),
     (VIEW, 'View'),
 ]
+
+CLICK_TRANSACTION_TOPIC = 'click-transaction'
+VIEW_TRANSACTION_TOPIC = 'view-transaction'
+FINANCIAL_REPORT_TRANSACTION_TOPIC = 'financial-transaction'

@@ -64,4 +64,4 @@ class ViewSerializer(serializers.ModelSerializer):
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ['ad_title', 'time', 'type', 'cost']
+        fields = ['ad_id', 'time', 'type', 'cost']

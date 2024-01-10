@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from .statics import default_credit, one_click_cost, thousand_view_cost, TYPE_CHOICES
+from .constants import default_credit, one_click_cost, thousand_view_cost, TYPE_CHOICES
 
 
 class Advertiser(models.Model):
