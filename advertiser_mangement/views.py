@@ -12,6 +12,8 @@ from rest_framework.response import Response
 from .constants import TYPE_CHOICES
 from transactions.click_ad_transaction import click_transaction_producer, click_transaction_consumer
 from transactions.view_ads_transaction import view_transaction_producer, view_transaction_consumer
+from .consumer import KafkaTransactionConsumer
+from .producer import KafkaTransactionProducer
 
 
 class UserViewSet(ModelViewSet):
@@ -42,13 +44,16 @@ class ShowAdsViewSet(ReadOnlyModelViewSet):
                 views_count = View.objects.filter(ad=ad).count()
                 views_count += 1
                 if views_count % 1000 == 0:
-                    view_transaction = Transaction(
-                        ad=ad, type='View', cost=ad.thousand_view_cost)
-                    view_transaction.save()
+                    transaction_producer = KafkaTransactionProducer()
+                    transaction_data = {
+                        'ad': ad.id,
+                        'type': 'View',
+                        'cost': ad.thousand_view_cost,
+                    }
+                    transaction_producer.produce_transaction(transaction_data)
+
                     advertiser.account_credit -= ad.thousand_view_cost
                     advertiser.save()
-
-                    view_transaction_producer(view_transaction)
 
                 count_new_views += 1
 
@@ -75,10 +80,13 @@ class ClickGenericView(RetrieveAPIView):
         ad_advertiser = ad.advertiser
         ad_advertiser.clicks += 1
 
-        click_transaction = Transaction(
-            ad=ad, type='Click', cost=ad.one_click_cost)
-        click_transaction_producer(click_transaction)
-        click_transaction.save()
+        transaction_producer = KafkaTransactionProducer()
+        transaction_data = {
+            'ad_id': ad.id,
+            'type': 'Click',
+            'cost': ad.one_click_cost,
+        }
+        transaction_producer.produce_transaction(transaction_data)
 
         advertiser = ad.advertiser
         advertiser.account_credit -= ad.one_click_cost
@@ -119,6 +127,8 @@ class ShowFinancialreportView(APIView):
         transactions = Transaction.objects.filter(
             ad__advertiser__id=id, time__range=(start_time, end_time))
         serializer = TransactionSerializer(transactions, many=True)
+        consume = Consumer()
+
         return Response(serializer.data)
 
 
