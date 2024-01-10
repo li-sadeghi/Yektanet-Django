@@ -10,6 +10,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from .constants import TYPE_CHOICES
+from transactions.click_ad_transaction import click_transaction_producer, click_transaction_consumer
+from transactions.view_ads_transaction import view_transaction_producer, view_transaction_consumer
 
 
 class UserViewSet(ModelViewSet):
@@ -44,7 +46,9 @@ class ShowAdsViewSet(ReadOnlyModelViewSet):
                     view_transaction.save()
                     advertiser.account_credit -= ad.thousand_view_cost
                     advertiser.save()
-                    # Add Producer View Transaction
+
+                    view_transaction_producer(view_transaction)
+
                 count_new_views += 1
 
             advertiser.views += count_new_views
