@@ -10,8 +10,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from .constants import TYPE_CHOICES
-from transactions.click_ad_transaction import click_transaction_producer, click_transaction_consumer
-from transactions.view_ads_transaction import view_transaction_producer, view_transaction_consumer
 from .consumer import KafkaTransactionConsumer
 from .producer import KafkaTransactionProducer
 
@@ -127,7 +125,6 @@ class ShowFinancialreportView(APIView):
         transactions = Transaction.objects.filter(
             ad__advertiser__id=id, time__range=(start_time, end_time))
         serializer = TransactionSerializer(transactions, many=True)
-        consume = Consumer()
 
         return Response(serializer.data)
 
