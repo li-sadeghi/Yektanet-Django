@@ -39,8 +39,9 @@ class ShowAdsViewSet(ReadOnlyModelViewSet):
                 new_view = View(ad=ad, viewer_ip=self.request.user_ip)
                 new_views.append(new_view)
 
-                views_count = View.objects.filter(ad=ad).count
-                if views_count+1 % 1000 == 0:
+                views_count = View.objects.filter(ad=ad).count()
+                views_count += 1
+                if views_count % 1000 == 0:
                     view_transaction = Transaction(
                         ad=ad, type='View', cost=ad.thousand_view_cost)
                     view_transaction.save()
