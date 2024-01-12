@@ -35,29 +35,3 @@ class ShowAdsViewSetTest(TransactionTestCase):
 
         advertiser = Advertiser.objects.get(id=1)
         self.assertEqual(advertiser.views, num_threads)
-
-    # def test_click_ad_race_condition(self):
-
-    #     def make_request():
-    #         client = self.client
-    #         response = client.get(reverse('click-ad', args=[1]))
-    #         return response
-
-    #     num_threads = 5
-    #     threads = []
-
-    #     for _ in range(num_threads):
-    #         thread = threading.Thread(target=make_request)
-    #         threads.append(thread)
-
-    #     for thread in threads:
-    #         thread.start()
-
-    #     for thread in threads:
-    #         thread.join()
-    #     # make_request()
-    #     # make_request()
-    #     # make_request()
-
-    #     advertiser = Advertiser.objects.get(id=1)
-    #     self.assertEqual(advertiser.clicks, num_threads)
