@@ -8,6 +8,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, DjangoModelPer
 from rest_framework.generics import RetrieveAPIView, CreateAPIView, UpdateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.db.models import F
+from django.db import transaction
 
 from .constants import TYPE_CHOICES
 from .consumer import KafkaTransactionConsumer
@@ -50,16 +52,16 @@ class ShowAdsViewSet(ReadOnlyModelViewSet):
                     }
                     transaction_producer.produce_transaction(transaction_data)
 
-                    advertiser.account_credit -= ad.thousand_view_cost
-                    advertiser.save()
+                    advertiser.account_credit = F(
+                        "account_credit") - ad.thousand_view_cost
 
                 count_new_views += 1
 
-            advertiser.views += count_new_views
+            advertiser.views = F("views") + count_new_views
+            advertiser.save()
             advertisers_update.append(advertiser)
 
         View.objects.bulk_create(new_views)
-        Advertiser.objects.bulk_update(advertisers_update, fields=['views'])
 
         return super().list(request, *args, **kwargs)
 
@@ -76,21 +78,18 @@ class ClickGenericView(RetrieveAPIView):
         new_click_event = Click(ad=ad, clicker_ip=self.request.user_ip)
 
         ad_advertiser = ad.advertiser
-        ad_advertiser.clicks += 1
-
-        transaction_producer = KafkaTransactionProducer()
-        transaction_data = {
-            'ad_id': ad.id,
-            'type': 'Click',
-            'cost': ad.one_click_cost,
-        }
-        transaction_producer.produce_transaction(transaction_data)
-
-        advertiser = ad.advertiser
-        advertiser.account_credit -= ad.one_click_cost
-        advertiser.save()
-
+        ad_advertiser.clicks = F('clicks') + 1
+        ad_advertiser.account_credit = F('account_credit') - ad.one_click_cost
         ad_advertiser.save()
+
+        # transaction_producer = KafkaTransactionProducer()
+        # transaction_data = {
+        #     'ad_id': ad.id,
+        #     'type': 'Click',
+        #     'cost': ad.one_click_cost,
+        # }
+        # transaction_producer.produce_transaction(transaction_data)
+
         new_click_event.save()
         serializer = self.get_serializer(ad)
 
@@ -130,10 +129,14 @@ class ShowFinancialreportView(APIView):
 
 
 class ShowAlertsView(APIView):
-    pass
+    def get(self, request, id):
+        alert = ""
+        pass
+        return Response(alert)
 
 
 click_generic_viewset = ClickGenericView.as_view()
 create_ad_viewset = AdCreateAPIView.as_view()
 update_advertiser_credit_view = AdvertiserUpdateView.as_view()
 show_financial_report_view = ShowFinancialreportView.as_view()
+show_alerts_view = ShowAlertsView.as_view()

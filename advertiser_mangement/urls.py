@@ -15,4 +15,5 @@ urlpatterns = [
          update_advertiser_credit_view, name='update-credit'),
     path('advertiser/<int:id>/transactions/<str:start_time>/<str:end_time>/',
          show_financial_report_view, name='transactions-report'),
+    path('advertiser/<int:id>/alerts', show_alerts_view, name='advertiser-alerts')
 ]
