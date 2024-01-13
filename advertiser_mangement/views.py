@@ -82,13 +82,13 @@ class ClickGenericView(RetrieveAPIView):
         ad_advertiser.account_credit = F('account_credit') - ad.one_click_cost
         ad_advertiser.save()
 
-        # transaction_producer = KafkaTransactionProducer()
-        # transaction_data = {
-        #     'ad_id': ad.id,
-        #     'type': 'Click',
-        #     'cost': ad.one_click_cost,
-        # }
-        # transaction_producer.produce_transaction(transaction_data)
+        transaction_producer = KafkaTransactionProducer()
+        transaction_data = {
+            'ad_id': ad.id,
+            'type': 'Click',
+            'cost': ad.one_click_cost,
+        }
+        transaction_producer.produce_transaction(transaction_data)
 
         new_click_event.save()
         serializer = self.get_serializer(ad)
